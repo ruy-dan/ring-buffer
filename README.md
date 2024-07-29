@@ -16,7 +16,7 @@ try buffer.write("hello");
 try buffer.write("circular");
 
 try buffer.read(); // hello
-try buffer.read(); //circular
+try buffer.read(); // circular
 
 try buffer.write("world");
 try buffer.read(); // world
@@ -60,7 +60,7 @@ Reads an item from the ring buffer. Returns an error if the buffer is empty.
 
 Clears the ring buffer.
 
-#### `plot(self: Self) void`
+#### `print(self: Self) void`
 
 Prints the contents of the ring buffer for debugging.
 
