@@ -15,11 +15,11 @@ var buffer = try RingBuffer([]const u8, .{ .capacity = 2 }).init();
 try buffer.write("hello");
 try buffer.write("circular");
 
-try buffer.read(); // hello
-try buffer.read(); // circular
+_ = try buffer.read(); // hello
+_ = try buffer.read(); // circular
 
 try buffer.write("world");
-try buffer.read(); // world
+_ = try buffer.read(); // world
 ```
 
 ## API
