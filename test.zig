@@ -6,9 +6,7 @@ const RingBuffer = @import("ring_buffer.zig").RingBuffer;
 test "basic, u8" {
     var buffer = try RingBuffer(u8, .{ .capacity = 4 }).init();
     try buffer.write(1);
-    var output: u8 = undefined;
-    try buffer.read(&output);
-    try expectEqual(1, output);
+    try expectEqual(1, try buffer.read());
 }
 
 test "write fails when full, u8" {
@@ -22,8 +20,7 @@ test "write fails when full, u8" {
 
 test "read fails when empty, u8" {
     var buffer = try RingBuffer(u8, .{ .capacity = 4 }).init();
-    var output: u8 = undefined;
-    try expectError(error.BufferEmpty, buffer.read(&output));
+    try expectError(error.BufferEmpty, buffer.read());
 }
 
 test "multiple writes and reads, u8" {
@@ -33,27 +30,18 @@ test "multiple writes and reads, u8" {
     try buffer.write(3);
     try buffer.write(4);
 
-    var output: u8 = undefined;
     try expectError(error.BufferFull, buffer.write(5));
 
-    try buffer.read(&output);
-    try expectEqual(1, output);
+    try expectEqual(1, try buffer.read());
 
     try buffer.write(5);
 
-    try buffer.read(&output);
-    try expectEqual(2, output);
+    try expectEqual(2, try buffer.read());
+    try expectEqual(3, try buffer.read());
+    try expectEqual(4, try buffer.read());
+    try expectEqual(5, try buffer.read());
 
-    try buffer.read(&output);
-    try expectEqual(3, output);
-
-    try buffer.read(&output);
-    try expectEqual(4, output);
-
-    try buffer.read(&output);
-    try expectEqual(5, output);
-
-    try expectError(error.BufferEmpty, buffer.read(&output));
+    try expectError(error.BufferEmpty, buffer.read());
 }
 
 test "multiple buffer buffer operations with unbounded indices" {
@@ -65,29 +53,21 @@ test "multiple buffer buffer operations with unbounded indices" {
     try buffer.write(4);
     try expectError(error.BufferFull, buffer.write(5));
 
-    var output: u8 = undefined;
-    try buffer.read(&output);
-    try expectEqual(1, output);
-    try buffer.read(&output);
-    try expectEqual(2, output);
-    try buffer.read(&output);
-    try expectEqual(3, output);
-    try buffer.read(&output);
-    try expectEqual(4, output);
-    try expectError(error.BufferEmpty, buffer.read(&output));
+    try expectEqual(1, try buffer.read());
+    try expectEqual(2, try buffer.read());
+    try expectEqual(3, try buffer.read());
+    try expectEqual(4, try buffer.read());
+    try expectError(error.BufferEmpty, buffer.read());
 
     try buffer.write(6);
     try buffer.write(7);
     try buffer.write(8);
-    buffer.print(); // Expected output: 6, 7, 8,
 }
 
 test "basic, []const u8" {
     var buffer = try RingBuffer([]const u8, .{ .capacity = 4 }).init();
     try buffer.write("hello");
-    var output: []const u8 = undefined;
-    try buffer.read(&output);
-    try expectEqual("hello", output);
+    try expectEqual("hello", try buffer.read());
 }
 
 test "basic overwrite, []const u8" {
@@ -95,17 +75,11 @@ test "basic overwrite, []const u8" {
     try buffer.write("hello");
     try buffer.write("circular");
 
-    var output: []const u8 = undefined;
-    try buffer.read(&output);
-    try expectEqual("hello", output);
-
-    try buffer.read(&output);
-    try expectEqual("circular", output);
+    try expectEqual("hello", try buffer.read());
+    try expectEqual("circular", try buffer.read());
 
     try buffer.write("world");
-
-    try buffer.read(&output);
-    try expectEqual("world", output);
+    try expectEqual("world", try buffer.read());
 }
 
 test "boundary conditions, u8" {
@@ -115,36 +89,15 @@ test "boundary conditions, u8" {
     try buffer.write(3);
     try buffer.write(4);
 
-    var output: u8 = undefined;
-    try buffer.read(&output);
-    try expectEqual(1, output);
+    try expectEqual(1, try buffer.read());
 
     try buffer.write(5);
     try expectError(error.BufferFull, buffer.write(6));
 
-    try buffer.read(&output);
-    try expectEqual(2, output);
-    try buffer.read(&output);
-    try expectEqual(3, output);
-    try buffer.read(&output);
-    try expectEqual(4, output);
-    try buffer.read(&output);
-    try expectEqual(5, output);
+    try expectEqual(2, try buffer.read());
+    try expectEqual(3, try buffer.read());
+    try expectEqual(4, try buffer.read());
+    try expectEqual(5, try buffer.read());
 
-    try expectError(error.BufferEmpty, buffer.read(&output));
-}
-
-test "print, u8" {
-    var buffer = try RingBuffer(u8, .{ .capacity = 4 }).init();
-    try buffer.write(1);
-    try buffer.write(2);
-    try buffer.write(3);
-    buffer.print(); // expected: 1, 2, 3,
-
-    var output: u8 = undefined;
-    try buffer.read(&output);
-    try expectEqual(1, output);
-
-    try buffer.write(4);
-    buffer.print(); // expected: 2, 3, 4,
+    try expectError(error.BufferEmpty, buffer.read());
 }

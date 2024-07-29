@@ -1,6 +1,6 @@
 # ring-buffer
 
-A Ring Buffer implementation with a fixed-size buffer that does not allocate memory dynamically.
+A Ring Buffer implementation with a fixed-size buffer.
 
 ```
 zig fetch --save https://github.com/ruy-dan/zig-ring-buffer/archive/refs/tags/v0.0.1.tar.gz
@@ -15,13 +15,11 @@ var buffer = try RingBuffer([]const u8, .{ .capacity = 2 }).init();
 try buffer.write("hello");
 try buffer.write("circular");
 
-var output: []const u8 = undefined;
-try buffer.read(&output); // hello
-
-try buffer.read(&output); //circular
+try buffer.read(); // hello
+try buffer.read(); //circular
 
 try buffer.write("world");
-try buffer.read(&output); // world
+try buffer.read(); // world
 ```
 
 ## API
@@ -30,9 +28,10 @@ try buffer.read(&output); // world
 pub fn RingBuffer(comptime T: type, opts: Opts) !type
 ```
 Creates a new RingBuffer with a fixed-size buffer.
-The default capacity is 1024. An optional capacity can be set through opts.
-e.g: `const Opts = struct { capacity: usize = 1024 };`
+The capacity can be set through opts. Otherwise, the default capacity is set to 1024.
 Returns an error if the capacity is not a power of two.
+
+`const Opts = struct { capacity: usize = 1024 };`
 
 
 ### Methods
@@ -53,7 +52,7 @@ Returns the number of elements in the ring buffer.
 
 Writes an item to the ring buffer. Returns an error if the buffer is full.
 
-#### `read(self: *Self, output: *T) !void`
+#### `read(self: *Self) !T`
 
 Reads an item from the ring buffer. Returns an error if the buffer is empty.
 
@@ -61,9 +60,9 @@ Reads an item from the ring buffer. Returns an error if the buffer is empty.
 
 Clears the ring buffer.
 
-#### `print(self: Self) void`
+#### `plot(self: Self) void`
 
-Prints the contents of the ring buffer.
+Prints the contents of the ring buffer for debugging.
 
 
 

@@ -48,10 +48,11 @@ pub fn RingBuffer(comptime T: type, opts: Opts) type {
             self.w += 1;
         }
 
-        pub fn read(self: *Self, output: *T) !void {
+        pub fn read(self: *Self) !T {
             if (self.isEmpty()) return error.BufferEmpty;
-            output.* = self.buffer[self.mask(self.r)];
+            const value = self.buffer[self.mask(self.r)];
             self.r += 1;
+            return value;
         }
 
         pub fn clear(self: *Self) void {
@@ -59,11 +60,10 @@ pub fn RingBuffer(comptime T: type, opts: Opts) type {
             self.w = 0;
         }
 
-        pub fn print(self: Self) void {
+        pub fn plot(self: Self) void {
             for (0..self.size()) |i| {
-                std.debug.print("{any}, ", .{self.buffer[self.mask(i)]});
+                std.log.debug("{any}, ", .{self.buffer[self.mask(i)]});
             }
-            std.debug.print("\n", .{});
         }
     };
 }
