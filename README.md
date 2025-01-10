@@ -2,10 +2,6 @@
 
 A Ring Buffer implementation with a fixed-size buffer.
 
-```
-zig fetch --save https://github.com/ruy-dan/zig-ring-buffer/archive/refs/tags/v0.0.1.tar.gz
-```
-
 ## Usage
 
 ```zig
@@ -22,6 +18,34 @@ try buffer.write("world");
 _ = try buffer.read(); // world
 ```
 
+## Install
+```sh
+zig fetch --save https://github.com/ruy-dan/ring-buffer/archive/refs/heads/main.tar.gz
+```
+
+build.zig.zon
+```zig
+.dependencies = .{
+    .ring_buffer = .{
+        .url = "https://github.com/ruy-dan/ring-buffer/archive/refs/heads/main.tar.gz",
+        // .hash
+    }
+}
+```
+
+build.zig
+```zig
+const ring_buffer = b.dependency("ring_buffer", .{
+    .target = target,
+    .optimize = optimize,
+});
+exe.addModule("ring-buffer", ring_buffer.module("ring-buffer"));
+```
+
+```sh
+zig build run
+```
+
 ## API
 
 ```zig
@@ -33,6 +57,11 @@ Returns an error if the capacity is not a power of two.
 
 `const Opts = struct { capacity: usize = 1024 };`
 
+
+## Test
+```zig
+zig test test.zig
+```
 
 ### Methods
 
